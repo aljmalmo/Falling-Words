@@ -2,121 +2,176 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>لعبة سرعة الكتابة التنافسية</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لعبة الكتابة الاحترافية</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
     body {
-      font-family: Tahoma, Arial, sans-serif;
-      background: #f6f7fa;
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
+      font-family: 'Cairo', Arial, sans-serif;
+      background: linear-gradient(135deg,#eef1fb 60%,#f8fbff 100%);
       direction: rtl;
-      box-sizing: border-box;
+      margin: 0; padding: 0;
     }
     .container {
       background: #fff;
-      border-radius: 16px;
-      margin: 40px auto;
-      padding: 24px 16px 20px;
-      max-width: 420px;
-      box-shadow: 0 2px 15px #eee;
+      border-radius: 18px;
+      max-width: 440px;
+      margin: 32px auto;
+      padding: 32px 16px 24px;
+      box-shadow: 0 2px 25px rgb(160 170 250 /12%);
+      text-align: center;
+      position: relative;
     }
-    h1 {color: #4158d0;}
+    h1 {color: #474dff; font-weight:700; margin-bottom: 10px;}
+    #level {font-size: 1.18em; color: #21a0c0; margin-bottom: 12px;}
     #quote {
-      font-size: 1.13em;
-      margin: 18px 0;
-      color: #454545;
-      background: #e5f0fc;
-      padding: 12px 8px;
-      border-radius: 7px;
-      min-height: 52px;
-      letter-spacing: 1px;
+      min-height: 54px;
+      background: #f2f6fd;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-size: 1.18em;
+      text-align: right;
+      letter-spacing: .7px;
+      word-break: break-word;
+      transition: .15s;
     }
     #input {
-      width: 99%;
-      padding: 12px 7px;
-      margin: 15px 0;
-      font-size: 1.09em;
+      width: 99%; max-width:420px;
+      padding: 13px 7px;
+      font-size: 1.07em;
       border-radius: 6px;
-      border: 1.3px solid #94bbe9;
+      border: 1.4px solid #aacafb;
+      margin:8px 0 13px;
+      transition:.15s;
     }
-    #timer, #level, #score {
-      font-size: 1.12em;
+    #input:focus {
+      border-color: #636efd;
+      outline:none;
+      box-shadow: 0 0 0 2px #e3e7fe;
+    }
+    #timer, #score, #stats {
+      font-size: 1.13em;
       font-weight: bold;
-      margin: 8px 0 2px;
+      margin: 7px 0 2px;
+      letter-spacing: .2px;
     }
-    #score {color: #16a085;}
-    #timer {color: #e57c23;}
-    #level {color: #4158d0;}
+    #timer {color: #e77c23;}
+    #score {color: #16b088;}
+    #stats {color: #6745d1;}
     #result {
-      font-size: 1.09em;
-      margin: 16px 0 10px;
+      font-size: 1.1em;
+      margin: 17px 0 8px;
+      min-height:24px;
+      transition:.17s;
     }
-    #btn-start, #btn-next, #btn-replay {
+    button {
       display:inline-block;
-      margin: 10px 7px 0 0;
-      background: linear-gradient(90deg,#4158d0 35%, #c850c0 100%);
+      margin: 8px 7px 0 0;
+      background: linear-gradient(95deg,#474dff 66%, #21c0d1 100%);
       color:#fff;
       border:none;
       border-radius:7px;
-      padding:10px 26px;
+      padding:10px 28px;
       font-size:1em;
       cursor:pointer;
-      transition:.2s;
+      transition:.21s;
     }
-    #btn-next {background: #16a085;}
-    #btn-replay {background: #e57c23;}
+    #btn-next {background: #16b088;}
+    #btn-replay {background: #e77c23;}
     .leaderboard {
-      background: #f8f8ff;
-      border-radius: 6px;
-      padding: 10px 6px;
-      margin-top: 15px;
+      background: #f8f9fd;
+      border-radius: 8px;
+      padding: 10px 7px;
+      margin:17px 0 6px;
       font-size: 1em;
       text-align: right;
     }
+    .statsbox {
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      background:#f2f6fd;
+      padding:7px 12px;
+      border-radius:7px;
+    }
+    .statsbox div {font-size:1em;}
+    .fade {
+      animation:fadeIn .6s;
+    }
+    @keyframes fadeIn {from {opacity:0;transform:scale(0.92);}to {opacity:1;transform:scale(1);}}
     @media (max-width:480px) {
-      .container {max-width:98vw;padding:14px 3vw;}
-      h1 {font-size:1.15em;}
-      #quote{font-size:1em;}
-      #input{font-size:0.97em;}
+      .container {max-width:98vw;padding:16px 2vw;}
+      h1 {font-size:1.1em;}
+      #quote{font-size:.97em;}
+      #input{font-size:0.94em;}
     }
   </style>
 </head>
 <body>
 <div class="container">
-  <h1>مسابقة سرعة الكتابة</h1>
-  <div id="level">المستوى: 1</div>
-  <div id="quote">اضغط ابدأ للبدء!</div>
-  <input id="input" type="text" placeholder="اكتب هنا..." disabled>
-  <div id="timer">الوقت: -- ثانية</div>
-  <div id="score">النقاط: 0</div>
+  <h1>لعبة الكتابة الاحترافية</h1>
+  <div id="level"></div>
+  <div id="quote"></div>
+  <input id="input" type="text" placeholder="ابدأ بالكتابة هنا" disabled autocomplete="off">
+  <div id="stats"></div>
+  <div class="statsbox">
+    <div id="timer"></div>
+    <div id="score"></div>
+  </div>
   <div id="result"></div>
   <button id="btn-start">ابدأ اللعبة</button>
-  <button id="btn-next" style="display:none;">الجولة التالية</button>
+  <button id="btn-next" style="display:none;">المستوى التالي</button>
   <button id="btn-replay" style="display:none;">إعادة المحاولة</button>
   <div class="leaderboard" id="leaderboard" style="display:none;">
-    <strong>أفضل نتائجك:</strong><br>
+    <strong>أفضل نتائجك (أعلى دقة وسرعة):</strong>
     <ol id="records"></ol>
   </div>
 </div>
 <script>
-const quotes = [
-  {txt:"التكنولوجيا تفتح آفاقاً جديدة كل يوم.",time:14},
-  {txt:"العقل السليم في الجسم السليم.",time:11},
-  {txt:"كلما كتبت بسرعة ودقة زادت نقاطك!",time:17},
-  {txt:"الثقة بالنفس طريق النجاح.",time:15},
-  {txt:"الحياة مليئة بالتحديات والفرص.",time:18},
-  {txt:"الأصدقاء كنز لا يفنى.",time:10},
-  {txt:"التعاون أساس التفوق.",time:12},
-  {txt:"العلم نور يهدي العقول.",time:15},
-  {txt:"ابدأ الآن ولا تؤجل عمل اليوم.",time:18},
-  {txt:"المثابرة تحقق المستحيل.",time:13}
+const levels = [
+  // الصعوبة 1
+  [
+    "انطلق وحقق هدفك.",
+    "الحلم بداية النجاح.",
+    "جملة سهلة قصيرة.",
+    "الأمل طريق التفوق.",
+  ],
+  // الصعوبة 2
+  [
+    "العقل السليم في الجسم السليم.",
+    "ابدأ يومك بابتسامة ولا تيأس.",
+    "الأصدقاء كنز لا يفنى أبداً.",
+    "الرياضة مفيدة للصحة الجسدية والنفسية.",
+  ],
+  // الصعوبة 3
+  [
+    "النجاح يتطلب صبراً، ومثابرة، وعزيمة قوية.",
+    "التكنولوجيا تفتح آفاقاً جديدة كل يوم، وتغير العالم بسرعة.",
+    "الإبداع هو القدرة على رؤية ما لا يراه الآخرون.",
+    "الحياة تجارب وخبرات نتعلم منها يوماً بعد يوم.",
+  ],
+  // الصعوبة 4
+  [
+    "هل يمكنك كتابة هذه الجملة دون أي أخطاء وفي أقل وقت ممكن؟",
+    "الصبر مفتاح الفرج، لكن العمل مفتاح النجاح الحقيقي.",
+    "في كل تحدٍ جديد نكتشف قدراتنا ونطور مهاراتنا الحياتية.",
+    "القراءة تفتح أبواب العلم وتزيد المعرفة والثقافة.",
+  ],
+  // الصعوبة 5 (الأصعب)
+  [
+    "من يصر على تحقيق النجاح لن توقفه صعوبات الحياة، بل تكون دافعاً له نحو التألق والتفوق.",
+    "الإبداع يحتاج إلى حرية التجربة والتكرار والتعلم من الأخطاء، مهما كانت بسيطة أو معقدة.",
+    "التحدي الأكبر ليس في اجتياز العقبات، بل في البقاء ثابتاً في وجه الرياح وتخطي حدود نفسك.",
+    "التعليم المستمر هو سلاح المستقبل، فهو يجدد الفكر ويطور المجتمع والإنسان.",
+  ]
 ];
 
-let round, score, totalLevels, currQuote, currTime, timerInt, startTime;
-let records = JSON.parse(localStorage.getItem('typingRecords')||'[]');
+// إعدادات المستوى والزمن
 const maxLevels = 5;
+const baseTimes = [13, 17, 23, 28, 36]; // الزمن الأساسي لكل مستوى
+let round, score, currQuote, currTime, timerInt, startTime, typingStats;
+let records = JSON.parse(localStorage.getItem('typingProRecords')||'[]');
 
 const quoteDiv = document.getElementById("quote"),
       input = document.getElementById("input"),
@@ -128,74 +183,132 @@ const quoteDiv = document.getElementById("quote"),
       scoreDiv = document.getElementById("score"),
       leaderboard = document.getElementById("leaderboard"),
       recordsList = document.getElementById("records"),
-      levelDiv = document.getElementById("level");
+      levelDiv = document.getElementById("level"),
+      statsDiv = document.getElementById("stats");
 
 function updateLeaderboard() {
   leaderboard.style.display=records.length?'block':'none';
   recordsList.innerHTML="";
-  records.slice(0,3).forEach((rec,i) => {
-    recordsList.innerHTML += "<li>نقاط: "+rec.score+" في "+rec.levels+" مستوى، "+rec.time+" ثانية</li>";
+  records.slice(0,3).forEach(rec=>{
+    recordsList.innerHTML += "<li>النقاط: "+rec.score+
+      ", أعلى دقة: "+rec.accuracy+"%، أسرع وقت: "+rec.time+"ث."+"</li>";
   });
 }
 
+function highlightErrors(inputText, quote) {
+  let result = "";
+  let errors = 0;
+  let correct = 0;
+  for (let i = 0; i < quote.length; i++) {
+    if (inputText[i] === undefined) {
+      result += "<span style='background:#ffeaea'>" + quote[i] + "</span>";
+      errors++;
+    } else if (inputText[i] === quote[i]) {
+      result += "<span style='color:green'>" + quote[i] + "</span>";
+      correct++;
+    } else {
+      result += "<span style='color:#ea6161;font-weight:bold'>" + quote[i] + "</span>";
+      errors++;
+    }
+  }
+  return {html: result, errors: errors, correct: correct};
+}
+function renderQuote(inputValue) {
+  let show = highlightErrors(inputValue, currQuote);
+  quoteDiv.innerHTML = show.html;
+  // حساب الإحصائيات اللحظية
+  let accuracy = Math.round(show.correct * 100 / currQuote.length);
+  statsDiv.innerHTML = "دقة لحظية: "+accuracy+"% ، الأخطاء: "+show.errors;
+  typingStats.accuracy=accuracy; typingStats.errors=show.errors; typingStats.correct=show.correct;
+}
+
 function startGame() {
-  round = 0; score = 0; totalLevels = maxLevels;
+  round = 0;
+  score = 0;
+  typingStats={accuracy:0, errors:0, correct:0, chars:0, time:0, speed:0};
   resultDiv.textContent="";
-  startBtn.style.display="none"; nextBtn.style.display="none"; replayBtn.style.display="none";
+  startBtn.style.display="none";
+  nextBtn.style.display="none";
+  replayBtn.style.display="none";
   input.disabled=false; input.value=""; input.focus();
   scoreDiv.textContent="النقاط: 0";
   leaderboard.style.display="none";
+  statsDiv.innerHTML="";
+  document.body.style.background = "linear-gradient(135deg,#eef1fb 60%,#f8fbff 100%)";
   playRound();
 }
 
 function playRound() {
   round++;
-  levelDiv.textContent="المستوى: "+round;
-  currQuote = quotes[Math.floor(Math.random()*quotes.length)];
-  quoteDiv.textContent=currQuote.txt;
-  currTime = Math.max(currQuote.time - round + 1, 7); // يصير الوقت أقل كل مرحلة
+  levelDiv.innerHTML="المستوى: "+round+" / "+maxLevels;
+  let levelTexts = levels[Math.min(round-1,levels.length-1)];
+  currQuote = levelTexts[Math.floor(Math.random()*levelTexts.length)];
+  currTime = baseTimes[Math.min(round-1,baseTimes.length-1)];
+  quoteDiv.innerHTML=currQuote;
+  quoteDiv.classList.remove("fade");
+  setTimeout(()=>{quoteDiv.classList.add("fade");},30)
   timerDiv.textContent = "الوقت: "+currTime+" ثانية";
-  input.value=""; input.disabled=false; input.focus();
-  resultDiv.textContent="";
+  input.value="";
+  input.disabled=false;
+  input.focus();
+  statsDiv.innerHTML="";
+  typingStats.chars=currQuote.length;
   timerInt = setInterval(updateTimer, 100);
   startTime = new Date().getTime();
+  document.body.style.background =
+    ["#eef1fb","#f2f6fd","#f8fdff","#e7f3ff","#e8f2fc","#f7e5fc"]
+    [Math.min(round-1,5)] + " 82%";
 }
-
 function updateTimer() {
   let now = new Date().getTime();
   let sec = currTime - ((now-startTime)/1000);
   timerDiv.textContent="الوقت: "+(sec>0?sec.toFixed(1):"0")+" ثانية";
-  if(sec<=0) finishRound(false);
+  if(sec<=0)
+    finishRound(false);
 }
-
 function finishRound(success) {
   clearInterval(timerInt); input.disabled=true;
   let usedTime = ((new Date().getTime() - startTime)/1000).toFixed(2);
-  if(success) {
-    let pts = Math.max(10, Math.ceil(100 * (currQuote.txt.length / usedTime)));
+  typingStats.time=usedTime;
+  typingStats.speed = Math.round(currQuote.length * 60 / usedTime) || 0;
+  let acc = typingStats.accuracy||0;
+  let pts = 0;
+  if(success && acc>85) {
+    pts = Math.round(10 + acc + typingStats.speed);
     score += pts;
     scoreDiv.textContent="النقاط: "+score;
-    resultDiv.innerHTML="<span style='color:green;'>رائع! النقاط: "+pts+" والوقت: "+usedTime+"ث.</span>";
-    if(round < totalLevels) nextBtn.style.display="inline-block";
-    else finishGame(usedTime);
-  } else {
-    resultDiv.innerHTML="<span style='color:#e57c23;'>انتهى الوقت! الإجابة غير صحيحة أو الوقت انتهى.</span>";
-    finishGame(usedTime);
+    resultDiv.innerHTML="<span style='color:green;font-weight:bold;'>رائع! النقاط: "+pts+"<br>الوقت: "+usedTime+"ث، الدقة: "+acc+"%، السرعة: "+typingStats.speed+" ح/د.</span>";
+    resultDiv.classList.add("fade");
+    if(round < maxLevels) nextBtn.style.display="inline-block";
+    else finishGame(usedTime,true);
+  } else if(success && acc<=85) {
+    resultDiv.innerHTML="<span style='color:#e77c23;'>تمت كتابة الجملة لكن هناك أخطاء كثيرة.<br>الدقة: "+acc+"%.</span>";
+    finishGame(usedTime,false);
   }
+  else {
+    resultDiv.innerHTML="<span style='color:#e77c23;'>انتهى الوقت أو هناك أخطاء في الكتابة.</span>";
+    finishGame(usedTime,false);
+  }
+  statsDiv.innerHTML="دقة نهائية: "+acc+"%، الأخطاء: "+typingStats.errors+"، سرعة: "+typingStats.speed+" حرف/دقيقة";
 }
-
-function finishGame(finalTime) {
+function finishGame(finalTime,success) {
   input.disabled=true; nextBtn.style.display="none"; replayBtn.style.display="inline-block";
   leaderboard.style.display="block";
-  records.unshift({score:score, levels:round, time:finalTime});
+  records.unshift({
+    score:score,
+    accuracy:typingStats.accuracy,
+    time:finalTime,
+    speed:typingStats.speed
+  });
   records = records.slice(0,5);
-  localStorage.setItem('typingRecords', JSON.stringify(records));
+  localStorage.setItem('typingProRecords', JSON.stringify(records));
   updateLeaderboard();
-  resultDiv.innerHTML += "<br><strong>انتهت اللعبة! مجموع نقاطك "+score+"</strong>";
+  resultDiv.innerHTML += "<br><strong>المجموع النهائي: "+score+"</strong>";
 }
-
 input.addEventListener("input",()=> {
-  if(input.value.trim()===currQuote.txt) finishRound(true);
+  renderQuote(input.value);
+  if(input.value === currQuote)
+    finishRound(true);
 });
 startBtn.addEventListener("click",startGame);
 nextBtn.addEventListener("click",playRound);

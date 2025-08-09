@@ -1,152 +1,208 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <title>لعبة تنمية مهارات الكتابة</title>
-    <style>
-        body {
-            font-family: Tahoma, Arial, sans-serif;
-            background: #f8f8fa;
-            padding: 40px 0;
-            direction: rtl;
-            text-align: center;
-        }
-        .container {
-            background: #fff;
-            border-radius: 16px;
-            margin: auto;
-            padding: 40px 20px 20px;
-            width: 95vw;
-            max-width: 500px;
-            box-shadow: 0 2px 15px #eee;
-        }
-        h1 { color: #5a82f5; }
-        #quote {
-            font-size: 1.2em;
-            margin: 20px 0;
-            color: #454545;
-            background: #f3f6ff;
-            padding: 15px 10px;
-            border-radius: 10px;
-            min-height: 68px;
-            letter-spacing: 1px;
-        }
-        #input {
-            width: 95%;
-            padding: 14px 8px;
-            margin: 20px 0;
-            font-size: 1.1em;
-            border-radius: 6px;
-            border: 1.5px solid #aabbee;
-        }
-        #timer {
-            font-weight: bold;
-            color: #ee3967;
-            font-size: 1.13em;
-        }
-        #btn-start, #btn-replay {
-            padding: 12px 28px;
-            background: #5a82f5;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        #btn-replay {
-            background: #ee3967;
-        }
-        #result {
-            font-size: 1.16em;
-            margin: 20px 0 12px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>لعبة سرعة الكتابة التنافسية</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Tahoma, Arial, sans-serif;
+      background: #f6f7fa;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      direction: rtl;
+      box-sizing: border-box;
+    }
+    .container {
+      background: #fff;
+      border-radius: 16px;
+      margin: 40px auto;
+      padding: 24px 16px 20px;
+      max-width: 420px;
+      box-shadow: 0 2px 15px #eee;
+    }
+    h1 {color: #4158d0;}
+    #quote {
+      font-size: 1.13em;
+      margin: 18px 0;
+      color: #454545;
+      background: #e5f0fc;
+      padding: 12px 8px;
+      border-radius: 7px;
+      min-height: 52px;
+      letter-spacing: 1px;
+    }
+    #input {
+      width: 99%;
+      padding: 12px 7px;
+      margin: 15px 0;
+      font-size: 1.09em;
+      border-radius: 6px;
+      border: 1.3px solid #94bbe9;
+    }
+    #timer, #level, #score {
+      font-size: 1.12em;
+      font-weight: bold;
+      margin: 8px 0 2px;
+    }
+    #score {color: #16a085;}
+    #timer {color: #e57c23;}
+    #level {color: #4158d0;}
+    #result {
+      font-size: 1.09em;
+      margin: 16px 0 10px;
+    }
+    #btn-start, #btn-next, #btn-replay {
+      display:inline-block;
+      margin: 10px 7px 0 0;
+      background: linear-gradient(90deg,#4158d0 35%, #c850c0 100%);
+      color:#fff;
+      border:none;
+      border-radius:7px;
+      padding:10px 26px;
+      font-size:1em;
+      cursor:pointer;
+      transition:.2s;
+    }
+    #btn-next {background: #16a085;}
+    #btn-replay {background: #e57c23;}
+    .leaderboard {
+      background: #f8f8ff;
+      border-radius: 6px;
+      padding: 10px 6px;
+      margin-top: 15px;
+      font-size: 1em;
+      text-align: right;
+    }
+    @media (max-width:480px) {
+      .container {max-width:98vw;padding:14px 3vw;}
+      h1 {font-size:1.15em;}
+      #quote{font-size:1em;}
+      #input{font-size:0.97em;}
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>لعبة سرعة الكتابة</h1>
-        <div id="quote">اضغط ابدأ لمحاولة جديدة!</div>
-        <input id="input" type="text" placeholder="اكتب النص هنا..." disabled>
-        <div id="timer">الوقت: -- ثوان</div>
-        <div id="result"></div>
-        <button id="btn-start">ابدأ</button>
-        <button id="btn-replay" style="display:none;">المحاولة مرة أخرى</button>
-    </div>
+<div class="container">
+  <h1>مسابقة سرعة الكتابة</h1>
+  <div id="level">المستوى: 1</div>
+  <div id="quote">اضغط ابدأ للبدء!</div>
+  <input id="input" type="text" placeholder="اكتب هنا..." disabled>
+  <div id="timer">الوقت: -- ثانية</div>
+  <div id="score">النقاط: 0</div>
+  <div id="result"></div>
+  <button id="btn-start">ابدأ اللعبة</button>
+  <button id="btn-next" style="display:none;">الجولة التالية</button>
+  <button id="btn-replay" style="display:none;">إعادة المحاولة</button>
+  <div class="leaderboard" id="leaderboard" style="display:none;">
+    <strong>أفضل نتائجك:</strong><br>
+    <ol id="records"></ol>
+  </div>
+</div>
 <script>
-    // عبارات للكتابة (يمكنك تغييرها حسب الرغبة)
-    const quotes = [
-        "النجاح يحتاج إلى إصرار وجهد وعدم الاستسلام للفشل.",
-        "القراءة تفتح أبواب العلم وتزيد المعرفة والثقافة.",
-        "ابدأ يومك بابتسامة وتوقع الخير دائماً.",
-        "التكنولوجيا تغير العالم بسرعة هائلة.",
-        "الرياضة مفيدة لصحتك الجسدية والنفسية.",
-        "الحياة تجارب وخبرات نتعلم منها كل يوم.",
-        "الإبداع هو القدرة على رؤية ما لا يراه الآخرون.",
-        "التعليم هو سلاح المستقبل.",
-        "الحلم بداية كل إنجاز.",
-        "الصبر مفتاح الفرج."
-    ];
+const quotes = [
+  {txt:"التكنولوجيا تفتح آفاقاً جديدة كل يوم.",time:14},
+  {txt:"العقل السليم في الجسم السليم.",time:11},
+  {txt:"كلما كتبت بسرعة ودقة زادت نقاطك!",time:17},
+  {txt:"الثقة بالنفس طريق النجاح.",time:15},
+  {txt:"الحياة مليئة بالتحديات والفرص.",time:18},
+  {txt:"الأصدقاء كنز لا يفنى.",time:10},
+  {txt:"التعاون أساس التفوق.",time:12},
+  {txt:"العلم نور يهدي العقول.",time:15},
+  {txt:"ابدأ الآن ولا تؤجل عمل اليوم.",time:18},
+  {txt:"المثابرة تحقق المستحيل.",time:13}
+];
 
-    let startTime, timerInterval, currQuote;
-    const quoteDiv = document.getElementById("quote");
-    const input = document.getElementById("input");
-    const timerDiv = document.getElementById("timer");
-    const startBtn = document.getElementById("btn-start");
-    const replayBtn = document.getElementById("btn-replay");
-    const resultDiv = document.getElementById("result");
+let round, score, totalLevels, currQuote, currTime, timerInt, startTime;
+let records = JSON.parse(localStorage.getItem('typingRecords')||'[]');
+const maxLevels = 5;
 
-    // بداية اللعبة
-    function startGame() {
-        // اختيار عبارة عشوائية
-        currQuote = quotes[Math.floor(Math.random() * quotes.length)];
-        quoteDiv.textContent = currQuote;
-        input.value = "";
-        input.disabled = false;
-        input.focus();
-        timerDiv.textContent = "الوقت: 0 ثانية";
-        resultDiv.textContent = "";
-        startBtn.style.display = "none";
-        replayBtn.style.display = "none";
-        startTime = new Date().getTime();
-        timerInterval = setInterval(updateTimer, 100);
-    }
+const quoteDiv = document.getElementById("quote"),
+      input = document.getElementById("input"),
+      timerDiv = document.getElementById("timer"),
+      startBtn = document.getElementById("btn-start"),
+      nextBtn  = document.getElementById("btn-next"),
+      replayBtn = document.getElementById("btn-replay"),
+      resultDiv = document.getElementById("result"),
+      scoreDiv = document.getElementById("score"),
+      leaderboard = document.getElementById("leaderboard"),
+      recordsList = document.getElementById("records"),
+      levelDiv = document.getElementById("level");
 
-    // تحديث التوقيت أثناء الكتابة
-    function updateTimer() {
-        let now = new Date().getTime();
-        let seconds = ((now - startTime) / 1000).toFixed(1);
-        timerDiv.textContent = "الوقت: " + seconds + " ثوان";
-    }
+function updateLeaderboard() {
+  leaderboard.style.display=records.length?'block':'none';
+  recordsList.innerHTML="";
+  records.slice(0,3).forEach((rec,i) => {
+    recordsList.innerHTML += "<li>نقاط: "+rec.score+" في "+rec.levels+" مستوى، "+rec.time+" ثانية</li>";
+  });
+}
 
-    // إنهاء اللعبة
-    function finishGame() {
-        clearInterval(timerInterval);
-        input.disabled = true;
-        let elapsed = ((new Date().getTime() - startTime) / 1000).toFixed(2);
-        timerDiv.textContent = "الوقت النهائي: " + elapsed + " ثانية";
-        if (input.value.trim() === currQuote) {
-            resultDiv.innerHTML = "<span style='color:green;'>أحسنت! كتبت الجملة بشكل صحيح.</span>";
-        } else {
-            resultDiv.innerHTML = "<span style='color:#e75d25;'>هناك بعض الأخطاء النصية.</span>";
-        }
-        replayBtn.style.display = "inline-block";
-    }
+function startGame() {
+  round = 0; score = 0; totalLevels = maxLevels;
+  resultDiv.textContent="";
+  startBtn.style.display="none"; nextBtn.style.display="none"; replayBtn.style.display="none";
+  input.disabled=false; input.value=""; input.focus();
+  scoreDiv.textContent="النقاط: 0";
+  leaderboard.style.display="none";
+  playRound();
+}
 
-    // عند الكتابة، تحقق من صحة النص تلقائياً
-    input.addEventListener("input", function() {
-        if (input.value.trim() === currQuote) {
-            finishGame();
-        }
-    });
+function playRound() {
+  round++;
+  levelDiv.textContent="المستوى: "+round;
+  currQuote = quotes[Math.floor(Math.random()*quotes.length)];
+  quoteDiv.textContent=currQuote.txt;
+  currTime = Math.max(currQuote.time - round + 1, 7); // يصير الوقت أقل كل مرحلة
+  timerDiv.textContent = "الوقت: "+currTime+" ثانية";
+  input.value=""; input.disabled=false; input.focus();
+  resultDiv.textContent="";
+  timerInt = setInterval(updateTimer, 100);
+  startTime = new Date().getTime();
+}
 
-    // أزرار التحكم
-    startBtn.addEventListener("click", startGame);
-    replayBtn.addEventListener("click", startGame);
+function updateTimer() {
+  let now = new Date().getTime();
+  let sec = currTime - ((now-startTime)/1000);
+  timerDiv.textContent="الوقت: "+(sec>0?sec.toFixed(1):"0")+" ثانية";
+  if(sec<=0) finishRound(false);
+}
 
-    // التأكد من عدم السماح بالنسخ واللصق
-    input.onpaste = event => event.preventDefault();
-    input.oncopy = event => event.preventDefault();
+function finishRound(success) {
+  clearInterval(timerInt); input.disabled=true;
+  let usedTime = ((new Date().getTime() - startTime)/1000).toFixed(2);
+  if(success) {
+    let pts = Math.max(10, Math.ceil(100 * (currQuote.txt.length / usedTime)));
+    score += pts;
+    scoreDiv.textContent="النقاط: "+score;
+    resultDiv.innerHTML="<span style='color:green;'>رائع! النقاط: "+pts+" والوقت: "+usedTime+"ث.</span>";
+    if(round < totalLevels) nextBtn.style.display="inline-block";
+    else finishGame(usedTime);
+  } else {
+    resultDiv.innerHTML="<span style='color:#e57c23;'>انتهى الوقت! الإجابة غير صحيحة أو الوقت انتهى.</span>";
+    finishGame(usedTime);
+  }
+}
+
+function finishGame(finalTime) {
+  input.disabled=true; nextBtn.style.display="none"; replayBtn.style.display="inline-block";
+  leaderboard.style.display="block";
+  records.unshift({score:score, levels:round, time:finalTime});
+  records = records.slice(0,5);
+  localStorage.setItem('typingRecords', JSON.stringify(records));
+  updateLeaderboard();
+  resultDiv.innerHTML += "<br><strong>انتهت اللعبة! مجموع نقاطك "+score+"</strong>";
+}
+
+input.addEventListener("input",()=> {
+  if(input.value.trim()===currQuote.txt) finishRound(true);
+});
+startBtn.addEventListener("click",startGame);
+nextBtn.addEventListener("click",playRound);
+replayBtn.addEventListener("click",startGame);
+input.onpaste = e=>e.preventDefault();
+input.oncopy = e=>e.preventDefault();
+updateLeaderboard();
 </script>
 </body>
 </html>

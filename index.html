@@ -1,990 +1,152 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الكلمات المتساقطة - Falling Words</title>
+    <title>لعبة تنمية مهارات الكتابة</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            min-height: 100vh;
-            overflow: hidden;
-            position: relative;
-            color: white;
-        }
-
-        .game-container {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-        }
-
-        .title {
-            font-size: 1.8rem;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .game-stats {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .stat-item {
+            font-family: Tahoma, Arial, sans-serif;
+            background: #f8f8fa;
+            padding: 40px 0;
+            direction: rtl;
             text-align: center;
         }
-
-        .stat-label {
-            font-size: 0.8rem;
-            opacity: 0.8;
-            margin-bottom: 2px;
+        .container {
+            background: #fff;
+            border-radius: 16px;
+            margin: auto;
+            padding: 40px 20px 20px;
+            width: 95vw;
+            max-width: 500px;
+            box-shadow: 0 2px 15px #eee;
         }
-
-        .stat-value {
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        .controls {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
+        h1 { color: #5a82f5; }
+        #quote {
+            font-size: 1.2em;
+            margin: 20px 0;
+            color: #454545;
+            background: #f3f6ff;
+            padding: 15px 10px;
+            border-radius: 10px;
+            min-height: 68px;
             letter-spacing: 1px;
         }
-
-        .btn-primary {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .language-toggle {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 15px;
-            padding: 6px 12px;
-            cursor: pointer;
-            font-weight: 600;
-            color: white;
-            transition: all 0.3s ease;
-            z-index: 1001;
-        }
-
-        .language-toggle:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.05);
-        }
-
-        .game-area {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .falling-word {
-            position: absolute;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-            padding: 8px 16px;
-            border-radius: 25px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-            user-select: none;
-            backdrop-filter: blur(5px);
-        }
-
-        .falling-word.correct {
-            animation: wordCorrect 0.5s ease;
-        }
-
-        .falling-word.missed {
-            animation: wordMissed 0.5s ease;
-        }
-
-        @keyframes wordCorrect {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.3); opacity: 0.8; }
-            100% { transform: scale(0); opacity: 0; }
-        }
-
-        @keyframes wordMissed {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-            100% { transform: translateX(0); opacity: 0; }
-        }
-
-        .input-area {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 20px;
-            backdrop-filter: blur(10px);
-            z-index: 1000;
-        }
-
-        .input-container {
-            max-width: 600px;
-            margin: 0 auto;
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .word-input {
-            flex: 1;
-            padding: 15px 20px;
-            border: none;
-            border-radius: 25px;
-            font-size: 1.2rem;
-            background: rgba(255, 255, 255, 0.9);
-            color: #333;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        .word-input:focus {
-            background: white;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-            transform: scale(1.02);
-        }
-
-        .lives-display {
-            display: flex;
-            gap: 5px;
-            align-items: center;
-        }
-
-        .heart {
-            width: 20px;
-            height: 20px;
-            background: #ff6b6b;
-            border-radius: 50%;
-            position: relative;
-            animation: heartbeat 1.5s ease-in-out infinite;
-        }
-
-        .heart.lost {
-            background: #666;
-            animation: none;
-        }
-
-        @keyframes heartbeat {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .message {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 30px 40px;
-            border-radius: 20px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            text-align: center;
-            z-index: 2000;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            display: none;
-        }
-
-        .message.show {
-            display: block;
-            animation: messageShow 0.5s ease;
-        }
-
-        @keyframes messageShow {
-            from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        }
-
-        .instructions {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 3000;
-            backdrop-filter: blur(10px);
-        }
-
-        .instructions.show {
-            display: flex;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .instructions-content {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 40px;
-            border-radius: 20px;
-            max-width: 600px;
-            text-align: center;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .instructions h3 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            color: #ff6b6b;
-        }
-
-        .instructions p {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            margin-bottom: 15px;
-            opacity: 0.9;
-        }
-
-        .instructions ol {
-            text-align: right;
-            font-size: 1rem;
-            line-height: 1.8;
+        #input {
+            width: 95%;
+            padding: 14px 8px;
             margin: 20px 0;
-            opacity: 0.9;
+            font-size: 1.1em;
+            border-radius: 6px;
+            border: 1.5px solid #aabbee;
         }
-
-        .close-instructions {
-            margin-top: 20px;
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-            color: white;
+        #timer {
+            font-weight: bold;
+            color: #ee3967;
+            font-size: 1.13em;
+        }
+        #btn-start, #btn-replay {
+            padding: 12px 28px;
+            background: #5a82f5;
+            color: #fff;
             border: none;
-            padding: 12px 24px;
-            border-radius: 25px;
-            font-size: 1rem;
-            font-weight: 600;
+            border-radius: 8px;
+            font-size: 1em;
             cursor: pointer;
-            transition: all 0.3s ease;
+            margin-top: 10px;
         }
-
-        .close-instructions:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        #btn-replay {
+            background: #ee3967;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* English styles */
-        body.en {
-            direction: ltr;
-        }
-
-        body.en .instructions ol {
-            text-align: left;
-        }
-
-        body.en .language-toggle {
-            left: auto;
-            right: 20px;
-        }
-
-        /* Mobile responsiveness */
-        @media (max-width: 768px) {
-            .header {
-                padding: 10px 15px;
-                flex-wrap: wrap;
-                gap: 10px;
-            }
-
-            .title {
-                font-size: 1.4rem;
-            }
-
-            .game-stats {
-                gap: 15px;
-            }
-
-            .stat-value {
-                font-size: 1rem;
-            }
-
-            .falling-word {
-                font-size: 1.2rem;
-                padding: 6px 12px;
-            }
-
-            .input-area {
-                padding: 15px;
-            }
-
-            .word-input {
-                font-size: 1rem;
-                padding: 12px 16px;
-            }
-
-            .instructions-content {
-                padding: 30px 20px;
-                margin: 20px;
-            }
-
-            .instructions h3 {
-                font-size: 1.5rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
-
-            .controls {
-                margin-top: 10px;
-            }
-
-            .falling-word {
-                font-size: 1rem;
-                padding: 4px 8px;
-            }
-
-            .message {
-                font-size: 1.2rem;
-                padding: 20px 25px;
-                margin: 20px;
-            }
-        }
-
-        /* Particle effects */
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: #ff6b6b;
-            border-radius: 50%;
-            pointer-events: none;
-            animation: particleFloat 2s ease-out forwards;
-        }
-
-        @keyframes particleFloat {
-            0% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-100px) scale(0);
-            }
+        #result {
+            font-size: 1.16em;
+            margin: 20px 0 12px;
         }
     </style>
 </head>
 <body>
-    <button class="language-toggle" onclick="toggleLanguage()">EN</button>
-    
-    <div class="game-container">
-        <div class="header">
-            <h1 class="title" id="title">الكلمات المتساقطة</h1>
-            
-            <div class="game-stats">
-                <div class="stat-item">
-                    <div class="stat-label" id="scoreLabel">النقاط</div>
-                    <div class="stat-value" id="score">0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label" id="levelLabel">المستوى</div>
-                    <div class="stat-value" id="level">1</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label" id="bestLabel">أفضل نتيجة</div>
-                    <div class="stat-value" id="bestScore">0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-label" id="livesLabel">الأرواح</div>
-                    <div class="lives-display" id="livesDisplay">
-                        <div class="heart"></div>
-                        <div class="heart"></div>
-                        <div class="heart"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="controls">
-                <button class="btn btn-primary" id="startBtn" onclick="startGame()">ابدأ اللعبة</button>
-                <button class="btn btn-secondary" id="pauseBtn" onclick="pauseGame()" style="display: none;">إيقاف مؤقت</button>
-                <button class="btn btn-secondary" id="instructionsBtn" onclick="showInstructions()">التعليمات</button>
-            </div>
-        </div>
-
-        <div class="game-area" id="gameArea">
-            <!-- Falling words will appear here -->
-        </div>
-
-        <div class="input-area">
-            <div class="input-container">
-                <input type="text" class="word-input" id="wordInput" placeholder="اكتب الكلمة هنا..." disabled>
-            </div>
-        </div>
+    <div class="container">
+        <h1>لعبة سرعة الكتابة</h1>
+        <div id="quote">اضغط ابدأ لمحاولة جديدة!</div>
+        <input id="input" type="text" placeholder="اكتب النص هنا..." disabled>
+        <div id="timer">الوقت: -- ثوان</div>
+        <div id="result"></div>
+        <button id="btn-start">ابدأ</button>
+        <button id="btn-replay" style="display:none;">المحاولة مرة أخرى</button>
     </div>
+<script>
+    // عبارات للكتابة (يمكنك تغييرها حسب الرغبة)
+    const quotes = [
+        "النجاح يحتاج إلى إصرار وجهد وعدم الاستسلام للفشل.",
+        "القراءة تفتح أبواب العلم وتزيد المعرفة والثقافة.",
+        "ابدأ يومك بابتسامة وتوقع الخير دائماً.",
+        "التكنولوجيا تغير العالم بسرعة هائلة.",
+        "الرياضة مفيدة لصحتك الجسدية والنفسية.",
+        "الحياة تجارب وخبرات نتعلم منها كل يوم.",
+        "الإبداع هو القدرة على رؤية ما لا يراه الآخرون.",
+        "التعليم هو سلاح المستقبل.",
+        "الحلم بداية كل إنجاز.",
+        "الصبر مفتاح الفرج."
+    ];
 
-    <div class="message" id="message"></div>
+    let startTime, timerInterval, currQuote;
+    const quoteDiv = document.getElementById("quote");
+    const input = document.getElementById("input");
+    const timerDiv = document.getElementById("timer");
+    const startBtn = document.getElementById("btn-start");
+    const replayBtn = document.getElementById("btn-replay");
+    const resultDiv = document.getElementById("result");
 
-    <div class="instructions" id="instructions">
-        <div class="instructions-content">
-            <h3 id="instructionsTitle">كيف تلعب؟</h3>
-            <p id="instructionsIntro">الكلمات المتساقطة هي لعبة سرعة وتركيز:</p>
-            <ol id="instructionsList">
-                <li>اضغط على "ابدأ اللعبة" لبدء جولة جديدة</li>
-                <li>راقب الكلمات التي تتساقط من أعلى الشاشة</li>
-                <li>اكتب الكلمة في الحقل أسفل الشاشة واضغط Enter</li>
-                <li>إذا كتبت الكلمة بشكل صحيح، ستحصل على نقاط</li>
-                <li>إذا وصلت الكلمة للأسفل دون كتابتها، ستخسر روحاً</li>
-                <li>تزداد سرعة الكلمات مع كل مستوى</li>
-                <li>اللعبة تنتهي عندما تخسر جميع الأرواح</li>
-            </ol>
-            <button class="close-instructions" onclick="hideInstructions()">فهمت!</button>
-        </div>
-    </div>
+    // بداية اللعبة
+    function startGame() {
+        // اختيار عبارة عشوائية
+        currQuote = quotes[Math.floor(Math.random() * quotes.length)];
+        quoteDiv.textContent = currQuote;
+        input.value = "";
+        input.disabled = false;
+        input.focus();
+        timerDiv.textContent = "الوقت: 0 ثانية";
+        resultDiv.textContent = "";
+        startBtn.style.display = "none";
+        replayBtn.style.display = "none";
+        startTime = new Date().getTime();
+        timerInterval = setInterval(updateTimer, 100);
+    }
 
-    <script>
-        // Game state
-        let gameState = {
-            isPlaying: false,
-            isPaused: false,
-            score: 0,
-            level: 1,
-            lives: 3,
-            bestScore: localStorage.getItem('fallingWordsBestScore') || 0,
-            wordsOnScreen: [],
-            gameSpeed: 1000, // milliseconds between word spawns
-            fallSpeed: 2, // pixels per frame
-            currentLanguage: 'ar'
-        };
+    // تحديث التوقيت أثناء الكتابة
+    function updateTimer() {
+        let now = new Date().getTime();
+        let seconds = ((now - startTime) / 1000).toFixed(1);
+        timerDiv.textContent = "الوقت: " + seconds + " ثوان";
+    }
 
-        // Word lists
-        const wordLists = {
-            ar: [
-                'كتاب', 'قلم', 'مدرسة', 'بيت', 'سيارة', 'شجرة', 'ماء', 'نار', 'هواء', 'أرض',
-                'شمس', 'قمر', 'نجم', 'سماء', 'بحر', 'جبل', 'وردة', 'طائر', 'سمك', 'حصان',
-                'كلب', 'قطة', 'أسد', 'فيل', 'نمر', 'ذئب', 'أرنب', 'فأر', 'ثعبان', 'نسر',
-                'تفاح', 'برتقال', 'موز', 'عنب', 'خوخ', 'مانجو', 'فراولة', 'كرز', 'ليمون', 'رمان',
-                'أحمر', 'أزرق', 'أخضر', 'أصفر', 'أسود', 'أبيض', 'بني', 'رمادي', 'بنفسجي', 'وردي'
-            ],
-            en: [
-                'book', 'pen', 'school', 'house', 'car', 'tree', 'water', 'fire', 'air', 'earth',
-                'sun', 'moon', 'star', 'sky', 'sea', 'mountain', 'flower', 'bird', 'fish', 'horse',
-                'dog', 'cat', 'lion', 'elephant', 'tiger', 'wolf', 'rabbit', 'mouse', 'snake', 'eagle',
-                'apple', 'orange', 'banana', 'grape', 'peach', 'mango', 'strawberry', 'cherry', 'lemon', 'pomegranate',
-                'red', 'blue', 'green', 'yellow', 'black', 'white', 'brown', 'gray', 'purple', 'pink'
-            ]
-        };
-
-        // Language content
-        const languages = {
-            ar: {
-                title: 'الكلمات المتساقطة',
-                scoreLabel: 'النقاط',
-                levelLabel: 'المستوى',
-                bestLabel: 'أفضل نتيجة',
-                livesLabel: 'الأرواح',
-                startBtn: 'ابدأ اللعبة',
-                pauseBtn: 'إيقاف مؤقت',
-                resumeBtn: 'استكمال',
-                instructionsBtn: 'التعليمات',
-                inputPlaceholder: 'اكتب الكلمة هنا...',
-                instructionsTitle: 'كيف تلعب؟',
-                instructionsIntro: 'الكلمات المتساقطة هي لعبة سرعة وتركيز:',
-                instructionsList: [
-                    'اضغط على "ابدأ اللعبة" لبدء جولة جديدة',
-                    'راقب الكلمات التي تتساقط من أعلى الشاشة',
-                    'اكتب الكلمة في الحقل أسفل الشاشة واضغط Enter',
-                    'إذا كتبت الكلمة بشكل صحيح، ستحصل على نقاط',
-                    'إذا وصلت الكلمة للأسفل دون كتابتها، ستخسر روحاً',
-                    'تزداد سرعة الكلمات مع كل مستوى',
-                    'اللعبة تنتهي عندما تخسر جميع الأرواح'
-                ],
-                closeBtn: 'فهمت!',
-                messages: {
-                    gameOver: 'انتهت اللعبة!',
-                    finalScore: 'نتيجتك النهائية: ',
-                    newRecord: 'رقم قياسي جديد! 🎉',
-                    levelUp: 'مستوى جديد! ',
-                    paused: 'اللعبة متوقفة مؤقتاً',
-                    correct: '+10 نقاط!'
-                }
-            },
-            en: {
-                title: 'Falling Words',
-                scoreLabel: 'Score',
-                levelLabel: 'Level',
-                bestLabel: 'Best Score',
-                livesLabel: 'Lives',
-                startBtn: 'Start Game',
-                pauseBtn: 'Pause',
-                resumeBtn: 'Resume',
-                instructionsBtn: 'Instructions',
-                inputPlaceholder: 'Type the word here...',
-                instructionsTitle: 'How to Play?',
-                instructionsIntro: 'Falling Words is a speed and focus game:',
-                instructionsList: [
-                    'Click "Start Game" to begin a new round',
-                    'Watch the words falling from the top of the screen',
-                    'Type the word in the field at the bottom and press Enter',
-                    'If you type the word correctly, you get points',
-                    'If the word reaches the bottom without typing it, you lose a life',
-                    'Word speed increases with each level',
-                    'Game ends when you lose all lives'
-                ],
-                closeBtn: 'Got it!',
-                messages: {
-                    gameOver: 'Game Over!',
-                    finalScore: 'Your final score: ',
-                    newRecord: 'New Record! 🎉',
-                    levelUp: 'Level Up! ',
-                    paused: 'Game Paused',
-                    correct: '+10 points!'
-                }
-            }
-        };
-
-        let gameLoop;
-        let wordSpawnTimer;
-
-        // Initialize game
-        function initGame() {
-            updateBestScore();
-            updateLanguage();
-            setupEventListeners();
+    // إنهاء اللعبة
+    function finishGame() {
+        clearInterval(timerInterval);
+        input.disabled = true;
+        let elapsed = ((new Date().getTime() - startTime) / 1000).toFixed(2);
+        timerDiv.textContent = "الوقت النهائي: " + elapsed + " ثانية";
+        if (input.value.trim() === currQuote) {
+            resultDiv.innerHTML = "<span style='color:green;'>أحسنت! كتبت الجملة بشكل صحيح.</span>";
+        } else {
+            resultDiv.innerHTML = "<span style='color:#e75d25;'>هناك بعض الأخطاء النصية.</span>";
         }
+        replayBtn.style.display = "inline-block";
+    }
 
-        // Setup event listeners
-        function setupEventListeners() {
-            const wordInput = document.getElementById('wordInput');
-            wordInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    checkWord();
-                }
-            });
-
-            // Prevent space from scrolling page
-            document.addEventListener('keydown', function(e) {
-                if (e.code === 'Space' && e.target === document.body) {
-                    e.preventDefault();
-                }
-            });
+    // عند الكتابة، تحقق من صحة النص تلقائياً
+    input.addEventListener("input", function() {
+        if (input.value.trim() === currQuote) {
+            finishGame();
         }
+    });
 
-        // Start game
-        function startGame() {
-            gameState.isPlaying = true;
-            gameState.isPaused = false;
-            gameState.score = 0;
-            gameState.level = 1;
-            gameState.lives = 3;
-            gameState.wordsOnScreen = [];
-            gameState.gameSpeed = 1000;
-            gameState.fallSpeed = 2;
+    // أزرار التحكم
+    startBtn.addEventListener("click", startGame);
+    replayBtn.addEventListener("click", startGame);
 
-            updateDisplay();
-            updateLivesDisplay();
-
-            document.getElementById('startBtn').style.display = 'none';
-            document.getElementById('pauseBtn').style.display = 'inline-block';
-            document.getElementById('wordInput').disabled = false;
-            document.getElementById('wordInput').focus();
-
-            // Clear any existing words
-            document.getElementById('gameArea').innerHTML = '';
-
-            startGameLoop();
-            startWordSpawning();
-        }
-
-        // Pause/Resume game
-        function pauseGame() {
-            if (gameState.isPaused) {
-                // Resume
-                gameState.isPaused = false;
-                document.getElementById('pauseBtn').textContent = languages[gameState.currentLanguage].pauseBtn;
-                document.getElementById('wordInput').disabled = false;
-                document.getElementById('wordInput').focus();
-                hideMessage();
-                startGameLoop();
-                startWordSpawning();
-            } else {
-                // Pause
-                gameState.isPaused = true;
-                document.getElementById('pauseBtn').textContent = languages[gameState.currentLanguage].resumeBtn;
-                document.getElementById('wordInput').disabled = true;
-                showMessage(languages[gameState.currentLanguage].messages.paused);
-                stopGameLoop();
-                stopWordSpawning();
-            }
-        }
-
-        // Start game loop
-        function startGameLoop() {
-            gameLoop = setInterval(() => {
-                if (!gameState.isPaused) {
-                    updateWords();
-                }
-            }, 16); // ~60 FPS
-        }
-
-        // Stop game loop
-        function stopGameLoop() {
-            if (gameLoop) {
-                clearInterval(gameLoop);
-                gameLoop = null;
-            }
-        }
-
-        // Start word spawning
-        function startWordSpawning() {
-            spawnWord(); // Spawn first word immediately
-            wordSpawnTimer = setInterval(() => {
-                if (!gameState.isPaused) {
-                    spawnWord();
-                }
-            }, gameState.gameSpeed);
-        }
-
-        // Stop word spawning
-        function stopWordSpawning() {
-            if (wordSpawnTimer) {
-                clearInterval(wordSpawnTimer);
-                wordSpawnTimer = null;
-            }
-        }
-
-        // Spawn a new word
-        function spawnWord() {
-            const words = wordLists[gameState.currentLanguage];
-            const randomWord = words[Math.floor(Math.random() * words.length)];
-            
-            const wordElement = document.createElement('div');
-            wordElement.className = 'falling-word';
-            wordElement.textContent = randomWord;
-            wordElement.style.left = Math.random() * (window.innerWidth - 200) + 'px';
-            wordElement.style.top = '-50px';
-            
-            document.getElementById('gameArea').appendChild(wordElement);
-            
-            gameState.wordsOnScreen.push({
-                element: wordElement,
-                text: randomWord,
-                y: -50
-            });
-        }
-
-        // Update word positions
-        function updateWords() {
-            gameState.wordsOnScreen.forEach((word, index) => {
-                word.y += gameState.fallSpeed;
-                word.element.style.top = word.y + 'px';
-                
-                // Check if word reached bottom
-                if (word.y > window.innerHeight - 100) {
-                    loseLife();
-                    removeWord(index);
-                }
-            });
-        }
-
-        // Check typed word
-        function checkWord() {
-            const input = document.getElementById('wordInput');
-            const typedWord = input.value.trim();
-            
-            if (!typedWord) return;
-            
-            // Find matching word
-            const matchIndex = gameState.wordsOnScreen.findIndex(word => 
-                word.text.toLowerCase() === typedWord.toLowerCase()
-            );
-            
-            if (matchIndex !== -1) {
-                // Correct word
-                const word = gameState.wordsOnScreen[matchIndex];
-                word.element.classList.add('correct');
-                
-                // Add particles effect
-                createParticles(word.element);
-                
-                // Add score
-                gameState.score += 10;
-                updateDisplay();
-                
-                // Show score popup
-                showScorePopup(word.element, '+10');
-                
-                // Remove word after animation
-                setTimeout(() => {
-                    removeWord(matchIndex);
-                }, 500);
-                
-                // Check for level up
-                if (gameState.score > 0 && gameState.score % 100 === 0) {
-                    levelUp();
-                }
-            }
-            
-            input.value = '';
-        }
-
-        // Create particle effect
-        function createParticles(element) {
-            const rect = element.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            
-            for (let i = 0; i < 8; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = centerX + (Math.random() - 0.5) * 40 + 'px';
-                particle.style.top = centerY + (Math.random() - 0.5) * 40 + 'px';
-                
-                document.body.appendChild(particle);
-                
-                setTimeout(() => {
-                    particle.remove();
-                }, 2000);
-            }
-        }
-
-        // Show score popup
-        function showScorePopup(element, text) {
-            const popup = document.createElement('div');
-            popup.textContent = text;
-            popup.style.position = 'absolute';
-            popup.style.left = element.style.left;
-            popup.style.top = element.style.top;
-            popup.style.color = '#4CAF50';
-            popup.style.fontSize = '1.5rem';
-            popup.style.fontWeight = 'bold';
-            popup.style.pointerEvents = 'none';
-            popup.style.animation = 'particleFloat 1s ease-out forwards';
-            
-            document.getElementById('gameArea').appendChild(popup);
-            
-            setTimeout(() => {
-                popup.remove();
-            }, 1000);
-        }
-
-        // Remove word
-        function removeWord(index) {
-            if (gameState.wordsOnScreen[index]) {
-                gameState.wordsOnScreen[index].element.remove();
-                gameState.wordsOnScreen.splice(index, 1);
-            }
-        }
-
-        // Lose life
-        function loseLife() {
-            gameState.lives--;
-            updateLivesDisplay();
-            
-            if (gameState.lives <= 0) {
-                endGame();
-            }
-        }
-
-        // Level up
-        function levelUp() {
-            gameState.level++;
-            gameState.gameSpeed = Math.max(300, gameState.gameSpeed - 50); // Increase spawn rate
-            gameState.fallSpeed += 0.5; // Increase fall speed
-            
-            updateDisplay();
-            showMessage(languages[gameState.currentLanguage].messages.levelUp + gameState.level, 1500);
-            
-            // Restart word spawning with new speed
-            stopWordSpawning();
-            startWordSpawning();
-        }
-
-        // End game
-        function endGame() {
-            gameState.isPlaying = false;
-            stopGameLoop();
-            stopWordSpawning();
-            
-            document.getElementById('startBtn').style.display = 'inline-block';
-            document.getElementById('pauseBtn').style.display = 'none';
-            document.getElementById('wordInput').disabled = true;
-            
-            // Clear remaining words
-            gameState.wordsOnScreen.forEach(word => word.element.remove());
-            gameState.wordsOnScreen = [];
-            
-            let message = languages[gameState.currentLanguage].messages.gameOver + '\n' + 
-                         languages[gameState.currentLanguage].messages.finalScore + gameState.score;
-            
-            if (gameState.score > gameState.bestScore) {
-                gameState.bestScore = gameState.score;
-                localStorage.setItem('fallingWordsBestScore', gameState.bestScore);
-                message += '\n' + languages[gameState.currentLanguage].messages.newRecord;
-                updateBestScore();
-            }
-            
-            showMessage(message, 3000);
-        }
-
-        // Show message
-        function showMessage(text, duration = 2000) {
-            const messageEl = document.getElementById('message');
-            messageEl.textContent = text;
-            messageEl.classList.add('show');
-            
-            setTimeout(() => {
-                hideMessage();
-            }, duration);
-        }
-
-        // Hide message
-        function hideMessage() {
-            document.getElementById('message').classList.remove('show');
-        }
-
-        // Update display
-        function updateDisplay() {
-            document.getElementById('score').textContent = gameState.score;
-            document.getElementById('level').textContent = gameState.level;
-        }
-
-        // Update best score
-        function updateBestScore() {
-            document.getElementById('bestScore').textContent = gameState.bestScore;
-        }
-
-        // Update lives display
-        function updateLivesDisplay() {
-            const hearts = document.querySelectorAll('.heart');
-            hearts.forEach((heart, index) => {
-                if (index < gameState.lives) {
-                    heart.classList.remove('lost');
-                } else {
-                    heart.classList.add('lost');
-                }
-            });
-        }
-
-        // Show instructions
-        function showInstructions() {
-            document.getElementById('instructions').classList.add('show');
-        }
-
-        // Hide instructions
-        function hideInstructions() {
-            document.getElementById('instructions').classList.remove('show');
-        }
-
-        // Toggle language
-        function toggleLanguage() {
-            gameState.currentLanguage = gameState.currentLanguage === 'ar' ? 'en' : 'ar';
-            updateLanguage();
-        }
-
-        // Update language
-        function updateLanguage() {
-            const lang = languages[gameState.currentLanguage];
-            const isEnglish = gameState.currentLanguage === 'en';
-            
-            // Update HTML attributes
-            document.documentElement.lang = gameState.currentLanguage;
-            document.documentElement.dir = isEnglish ? 'ltr' : 'rtl';
-            document.body.className = isEnglish ? 'en' : '';
-            
-            // Update text content
-            document.getElementById('title').textContent = lang.title;
-            document.getElementById('scoreLabel').textContent = lang.scoreLabel;
-            document.getElementById('levelLabel').textContent = lang.levelLabel;
-            document.getElementById('bestLabel').textContent = lang.bestLabel;
-            document.getElementById('livesLabel').textContent = lang.livesLabel;
-            document.getElementById('startBtn').textContent = lang.startBtn;
-            document.getElementById('instructionsBtn').textContent = lang.instructionsBtn;
-            document.getElementById('wordInput').placeholder = lang.inputPlaceholder;
-            document.getElementById('instructionsTitle').textContent = lang.instructionsTitle;
-            document.getElementById('instructionsIntro').textContent = lang.instructionsIntro;
-            
-            // Update pause button if visible
-            const pauseBtn = document.getElementById('pauseBtn');
-            if (pauseBtn.style.display !== 'none') {
-                pauseBtn.textContent = gameState.isPaused ? lang.resumeBtn : lang.pauseBtn;
-            }
-            
-            // Update instructions list
-            const instructionsList = document.getElementById('instructionsList');
-            instructionsList.innerHTML = '';
-            lang.instructionsList.forEach(instruction => {
-                const li = document.createElement('li');
-                li.textContent = instruction;
-                instructionsList.appendChild(li);
-            });
-            
-            // Update close button
-            document.querySelector('.close-instructions').textContent = lang.closeBtn;
-            
-            // Update language toggle button
-            document.querySelector('.language-toggle').textContent = isEnglish ? 'ع' : 'EN';
-        }
-
-        // Initialize game when page loads
-        document.addEventListener('DOMContentLoaded', initGame);
-    </script>
+    // التأكد من عدم السماح بالنسخ واللصق
+    input.onpaste = event => event.preventDefault();
+    input.oncopy = event => event.preventDefault();
+</script>
 </body>
 </html>
-
